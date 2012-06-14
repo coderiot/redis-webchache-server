@@ -1,8 +1,8 @@
 Requirements
 ------------
 
- - python-requests
- - redis
+ - [python-requests](https://github.com/kennethreitz/requests)
+ - [redis-py](https://github.com/andymccurdy/redis-py)
 
 Usage
 -----
