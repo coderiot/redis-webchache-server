@@ -1,0 +1,5 @@
+Requirements
+------------
+
+ - python-requests
+ - redis
