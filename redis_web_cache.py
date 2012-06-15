@@ -15,7 +15,8 @@ class RedisCacheHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.db.exists(self.path):
             print "Cache hit"
-            data = self.db.get(self.path)
+            content_type = self.db.hget(self.path, "content-type")
+            data = self.db.hget(self.path, "content")
             status_code = 200
         else:
             print "Cache miss"
@@ -23,13 +24,16 @@ class RedisCacheHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
             data = r.content
             status_code = r.status_code
+            content_type = r.headers.get("content-type")
             cache_control = self.__cache_control(r.headers.get("cache-control"))
 
             if not cache_control["no-cache"]:
-                self.db.set(self.path, data)
+                self.db.hset(self.path, "content", data)
+                self.db.hset(self.path, "content-type", content_type)
                 self.db.expire(self.path, cache_control["max-age"])
 
         self.send_response(status_code)
+        self.send_header("Content-type", content_type)
         self.end_headers()
         self.wfile.writelines(data)
 
